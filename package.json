@@ -10,7 +10,15 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/leaflet": "^1.2.2",
+    "mongodb": "6.8",
     "nuxt": "^3.12.4",
+    "nuxt-mongoose": "^1.0.6",
     "vue": "latest"
+  },
+  "devDependencies": {
+    "@bootstrap-vue-next/nuxt": "^0.24.10",
+    "bootstrap": "^5.3.3",
+    "bootstrap-vue-next": "^0.24.10"
   }
 }
