@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
         };
     }
 
-    const artifacts = await Artifact.find(dbQuery);
+    const artifacts = await Artifact.find(dbQuery).sort({title: 1});
 
     return artifacts;
 })

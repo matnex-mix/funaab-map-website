@@ -32,5 +32,5 @@ export default defineNuxtConfig({
     options: {},
     modelsDir: 'models',
     devtools: true,
-  },
+  }
 })

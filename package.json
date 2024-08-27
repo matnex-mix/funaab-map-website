@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@nuxtjs/leaflet": "^1.2.2",
     "mongodb": "6.8",
     "nuxt": "^3.12.4",
