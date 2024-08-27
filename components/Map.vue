@@ -38,13 +38,13 @@
           :color="'var(--bs-primary)'"
       />
       <LCircleMarker
-          v-if="routes"
+          v-if="routes.length > 0"
           :lat-lng="routes[0]"
           :radius="6"
           :color="'green'"
       />
       <LCircleMarker
-          v-if="routes"
+          v-if="routes.length > 0"
           :lat-lng="routes[routes.length - 1]"
           :radius="6"
           :color="'green'"
@@ -66,6 +66,8 @@
   const defaultCenter = [7.230838, 3.436566];
 
   const center = computed(() => props.userLocation ? props.userLocation : defaultCenter)
+
+  const routes = computed(() => props.routes)
 
   const props = defineProps({
     userLocation: {

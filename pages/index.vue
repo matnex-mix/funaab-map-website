@@ -63,7 +63,7 @@
 
     console.log(request);
 
-    directionsService.route(request, function(response, status) {
+    setTimeout(() => directionsService.route(request, function(response, status) {
       console.log(response);
       if (status == 'OK') {
         routes.value = response.routes[0].overview_path.map((e) => [e.lat(), e.lng()])
@@ -71,7 +71,7 @@
       }
 
       loading.value = false;
-    });
+    }), 0);
   }
 
   onMounted(() => {
