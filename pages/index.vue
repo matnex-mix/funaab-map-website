@@ -12,6 +12,7 @@
   const showModal = ref(true)
   const watchId = ref(0)
   const currentUserPosition = ref(null);
+  const showPointOnMap = ref(null);
 
   const { data: artifacts, status: artifactStatus } = await useFetch('/api/places', {
     query: {
@@ -31,6 +32,8 @@
   const selectedMode = ref('DRIVING');
   const routes = ref([]);
   const loading = ref(false);
+  const distance = ref('');
+  const duration = ref('');
 
   let directionsService;
 
@@ -43,7 +46,7 @@
 
   const filteredArtifacts = computed(() => {
     // console.log(artifacts.value);
-    return artifacts.value?.filter((e) => !search.value || e.title.toLowerCase().indexOf(search.value) != -1 || e.description.toLowerCase().indexOf(search.value) != -1)
+    return artifacts.value?.filter((e) => !search.value || e.title.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || e.description.toLowerCase().indexOf(search.value.toLowerCase()) != -1)
   })
 
   const getDirections  = async (e) => {
@@ -67,6 +70,8 @@
       console.log(response);
       if (status == 'OK') {
         routes.value = response.routes[0].overview_path.map((e) => [e.lat(), e.lng()])
+        distance.value = response.routes[0].legs[0].distance.text
+        duration.value = response.routes[0].legs[0].duration.text.replace('minutes', 'mins').replace('hours', 'hrs')
         // directionsRenderer.setDirections(response);
       }
 
@@ -135,7 +140,21 @@
         </form>
 
         <div v-if="directionMode" class="text-start mt-4">
-          <label class="mb-2">Mode of Travel:</label>
+          <div class="row mb-4 align-items-stretch">
+            <div class="col-6">
+              <div class="rounded border p-3 shadow h-100">
+                <strong class="text-success">DISTANCE</strong>
+                <h4 class="mt-2">{{ distance }}</h4>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="rounded border p-3 shadow h-100">
+                <strong class="text-success">DURATION</strong>
+                <h3 class="mt-2">{{ duration }}</h3>
+              </div>
+            </div>
+          </div>
+          <label class="mb-2 mt-1">Mode of Travel:</label>
           <BFormSelect v-model="selectedMode" :options="['DRIVING', 'TRANSIT', 'BICYCLING', 'WALKING']"></BFormSelect>
 
           <div class="mb-2">&nbsp;</div>
@@ -193,21 +212,24 @@
       <div class="flex-grow-1">
         <ClientOnly>
           <BOverlay :show="loading" rounded="lg" class="h-100 w-100">
-            <Map :points="artifacts" :routes="routes" :user-location="currentUserPosition ? [currentUserPosition.latitude, currentUserPosition.longitude] : null" @on-view-place="place => selectedPoint = place" />
+            <Map :points="artifacts" :routes="routes" :user-location="showPointOnMap ?? (currentUserPosition ? [currentUserPosition.latitude, currentUserPosition.longitude] : null)" @on-view-place="place => selectedPoint = place" />
           </BOverlay>
         </ClientOnly>
       </div>
 
       <BModal v-if="selectedPoint" v-model="showModal" centered size="xl" :hide-footer="true" :hide-header="true" :no-close-on-backdrop="true">
         <div class="row">
-          <div class="col-12 col-lg-5">
+          <div class="col-12 col-lg-5 mb-2">
             <h3>{{ selectedPoint.title }}</h3>
             <p>{{ selectedPoint.description }}</p>
 
-            <BButton @click="fromPoint = [selectedPoint.lat, selectedPoint.lng]; getDirections(null);" variant="success" class="me-2">
+            <BButton @click="fromPoint = currentUserPosition ? [currentUserPosition.latitude, currentUserPosition.longitude] : null; toPoint = [selectedPoint.lat, selectedPoint.lng]; getDirections(null);" variant="success" class="me-2 mb-3">
               Get directions
             </BButton>
-            <BButton variant="secondary" @click="selectedPoint = null;">
+            <BButton @click="showPointOnMap = [selectedPoint.lat, selectedPoint.lng]; selectedPoint = null;" variant="link-success" class="me-2 mb-3">
+              Show on Map
+            </BButton>
+            <BButton variant="secondary" @click="selectedPoint = null;" class="mb-3">
               Close
             </BButton>
           </div>
